@@ -1,16 +1,52 @@
 import React from 'react'
 import Layout from '../../components/layout'
-import styles from '../../styles/projects.module.css'
+import * as styles from '../../styles/projects.module.css'
+import { graphql , Link} from 'gatsby'
 
-export default function Project() {
+export default function Projects({data}) {
+  console.log(data)
+  const projects = data.projects.nodes 
+  const contact = data.contact.siteMetadata.contact 
+
   return (
     <Layout>
     <div className={styles.portfolio}>
-        <h1>Projects</h1>
-        <p>If you create a index.js file inside the projects directory
-            then it will be considered as a base file and it can be accessed using localhost:8000/projects.
-        </p>
+        <h2>My Protfolio</h2>
+        <h3> Projects & Websites that I've created
+        </h3>
+       <div className={styles.projects}>
+        {projects.map(project => 
+          <Link to = {'/projects/' + project.frontmatter.slug} key = {project.id}>
+            <div>
+              <h3>{project.frontmatter.title}</h3>
+              <p>{project.frontmatter.stack}</p>
+              </div></Link>)}
+       </div>
+       <p>Like what you see? contact me {contact} if you any quaries.</p>
     </div>
     </Layout>
   )
 }
+
+export const query = graphql`
+query ProjectsPage {
+  projects: allMarkdownRemark(sort: {frontmatter: {date: DESC}}) {
+    nodes {
+      frontmatter {
+        slug
+        stack
+        title
+      }
+      id
+    }
+  }
+  contact: site {
+    siteMetadata {
+      title
+      description
+      copyright
+      contact
+    }
+  }
+}
+`
